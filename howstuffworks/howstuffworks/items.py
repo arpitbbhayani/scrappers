@@ -12,7 +12,6 @@ class HowstuffworksItem(scrapy.Item):
     # define the fields for your item here like:
     url = scrapy.Field()
     title = scrapy.Field()
-    link = scrapy.Field()
     desc = scrapy.Field()
     excerpt = scrapy.Field()
     image = scrapy.Field()
