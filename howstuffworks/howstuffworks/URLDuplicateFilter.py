@@ -1,17 +1,13 @@
 import os
 
-from scrapy.dupefilter import RFPDupeFilter
+from scrapy.dupefilters import RFPDupeFilter
 from scrapy.utils.request import request_fingerprint
-
-import logging
-logger = logging.getLogger(__name__)
 
 class URLFilter(RFPDupeFilter):
     """A dupe filter that considers specific ids in the url"""
 
     def __getid(self, url):
-        mm = url
-        return mm
+        return url
 
     def request_seen(self, request):
         fp = self.__getid(request.url)

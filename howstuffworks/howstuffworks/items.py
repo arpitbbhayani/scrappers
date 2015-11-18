@@ -14,5 +14,5 @@ class HowstuffworksItem(scrapy.Item):
     title = scrapy.Field()
     desc = scrapy.Field()
     excerpt = scrapy.Field()
-    image = scrapy.Field()
-    article_date = scrapy.Field()
+    images = scrapy.Field()
+    related = scrapy.Field()
