@@ -14,6 +14,11 @@ BOT_NAME = 'howstuffworks'
 SPIDER_MODULES = ['howstuffworks.spiders']
 NEWSPIDER_MODULE = 'howstuffworks.spiders'
 
+MONGO_URI = 'mongodb://localhost:27017'
+MONGO_DATABASE = 'frictionle'
+
+DUMP_FOLDER = '/Users/arpitbhayani/frictionle/site_data/'
+
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'howstuffworks (+http://www.yourdomain.com)'
 
@@ -60,9 +65,10 @@ NEWSPIDER_MODULE = 'howstuffworks.spiders'
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'howstuffworks.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'howstuffworks.pipelines.DatabaseEntryPipeline': 100,
+   'howstuffworks.pipelines.FileWriterPipeline': 200,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

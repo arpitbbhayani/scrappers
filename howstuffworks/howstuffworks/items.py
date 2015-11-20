@@ -8,7 +8,7 @@
 import scrapy
 
 
-class HowstuffworksItem(scrapy.Item):
+class ArticleItem(scrapy.Item):
     # define the fields for your item here like:
     url = scrapy.Field()
     title = scrapy.Field()
@@ -16,3 +16,5 @@ class HowstuffworksItem(scrapy.Item):
     excerpt = scrapy.Field()
     images = scrapy.Field()
     related = scrapy.Field()
+
+    urlb64 = scrapy.Field()
