@@ -3,7 +3,6 @@ import re, requests
 import xml.etree.ElementTree as ET
 
 from optparse import OptionParser
-from BeautifulSoup import BeautifulSoup
 
 namespaces = {
     'page': 'http://www.mediawiki.org/xml/export-0.10/'
