@@ -9,20 +9,46 @@ namespaces = {
     'page': 'http://www.mediawiki.org/xml/export-0.10/'
 }
 
-links_filter = re.compile('\[\[[a-zA-Z0-9_]+:')
+links_filter = re.compile('\[\[[a-zA-Z0-9_ ]*:')
 
-def get_links(html_content):
+
+def process_links(raw_links):
     links = []
-    soup = BeautifulSoup(html_content)
-    for link in soup.findAll('a', attrs={'href': re.compile("^/wiki/")}):
-        href = link.get('href')
-        anchor_text = link.getText().strip()
-        if len(anchor_text) > 0 and not links_filter.match(href):
-            links.append({
-                'href': href,
-                'text': anchor_text
-            })
+    for raw_link in raw_links:
+        link = raw_link[2:-2]
+        index = link.find('|')
+        if index != -1:
+            to = link[:index]
+            text = link[index:]
+        else:
+            to = link
+            text = link
+
+        index = to.find('#')
+        if index != -1:
+            to = to[:index]
+
+        to = to.strip().lower()
+        text = text.strip().lower()
+
+        if len(text) == 0:
+            text = to
+
+        links.append({
+            'to'   : to,
+            'text' : text
+        })
     return links
+
+
+def process_categories(raw_categories):
+    categories = []
+    for raw_category in raw_categories:
+        category = raw_category[11:-2].strip().lower()
+        categories.append({
+            'name': category
+        })
+    return categories
 
 
 def process_wiki(page_content):
@@ -41,17 +67,18 @@ def process_wiki(page_content):
         if entity.startswith('[[Category:'):
             raw_categories.append(entity)
         elif links_filter.match(entity):
-            # Drop
             pass
         else:
             raw_links.append(entity)
-
         start_index = page_content.find('[[', end_index+2)
 
-    return raw_links, raw_categories
+    links = process_links(raw_links)
+    categories = process_categories(raw_categories)
+    return links, categories
 
 
 def process(file_path):
+    dis_file = file_path + '.dis'
     json_file = file_path + '.json'
 
     tree = ET.parse(file_path)
@@ -66,8 +93,32 @@ def process(file_path):
         if page_ns != '0':
             continue
 
-        raw_links, raw_categories = process_wiki(page_content)
-        print raw_links, raw_categories
+        links, categories = process_wiki(page_content)
+
+        data = {
+            'id': page_id.strip(),
+            'title': page_title.strip().lower(),
+            'links': links,
+            'categories': categories
+        }
+
+        possible_dis = False
+        for category in categories:
+            if "disambiguation" in category['name']:
+                possible_dis = True
+
+        if 'disambiguation' in page_title.lower():
+            possible_dis = True
+
+        if possible_dis:
+            with open(dis_file, 'a') as outfile:
+                json.dump(data, outfile)
+                outfile.write('\n')
+        else:
+            with open(json_file, 'a') as outfile:
+                json.dump(data, outfile)
+                outfile.write('\n')
+                print 'id:', page_id
 
 
 if __name__ == '__main__':
