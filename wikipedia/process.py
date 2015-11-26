@@ -8,7 +8,7 @@ m_nicknames = {}
 
 def process(file_path, process_nicks, process_categories):
     """
-    Processes JSON file
+    Processes JSON file and produces the nickname and categories
     """
     file_path_abs = os.path.abspath(file_path)
 
