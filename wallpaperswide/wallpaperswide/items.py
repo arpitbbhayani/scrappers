@@ -8,7 +8,6 @@
 import scrapy
 
 
-class WallpaperswideItem(scrapy.Item):
+class WallpaperItem(scrapy.Item):
     # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+    image_url = scrapy.Field()
