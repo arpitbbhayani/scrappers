@@ -6,7 +6,7 @@ from os.path import splitext, basename
 
 import logging
 
-class ScienceCrawler(scrapy.Spider):
+class HKJCCrawler(scrapy.Spider):
     name = "hkjc"
     site = "hkjc"
     allowed_domains = ["bet.hkjc.com"]
@@ -73,9 +73,3 @@ class ScienceCrawler(scrapy.Spider):
                 next_link = page_button.xpath('@href').extract()
                 if len(next_link) >= 0:
                     yield scrapy.Request(self.base_domain + next_link[0], callback=self.parse)
-
-
-        # next_buttons = response.xpath('//*[@id="ContentLibrary"]//img[@src="http://s.hswstatic.com/en-us/skins/hsw/arrow-right-3x5-2.png"]')
-        # for next_button in next_buttons:
-        #      url = self.getatindex(next_button.xpath('../@href').extract())
-        #      yield scrapy.Request(url, callback=self.parse)
