@@ -5,7 +5,6 @@ cryptography==1.1
 cssselect==0.9.1
 decorator==4.0.4
 enum34==1.0.4
-gnureadline==6.3.3
 html2text==2015.11.4
 idna==2.0
 ipaddress==1.0.15

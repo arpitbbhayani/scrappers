@@ -22,4 +22,5 @@ class FileWriterPipeline(object):
         with open(file_path, 'a') as data_file:
             content = str(item)
             data_file.write(content)
+            data_file.write('\n')
         return item

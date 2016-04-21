@@ -4,6 +4,7 @@ from hkjc.items import ArticleItem
 from urlparse import urlparse
 from os.path import splitext, basename
 
+import logging
 
 class ScienceCrawler(scrapy.Spider):
     name = "hkjc"
@@ -29,7 +30,6 @@ class ScienceCrawler(scrapy.Spider):
 
     def process_rows(self, rows):
         items = []
-        self.logger.warning('>>>>>>>>>>>>>>>>>>>> ROW%s')
         for row in rows:
 
             item = ArticleItem()
@@ -46,7 +46,6 @@ class ScienceCrawler(scrapy.Spider):
                 if len(flags) >= 2:
                     item['flag_2'] = self.get_image_filename(flags[1].css('img::attr(src)').extract())
 
-            self.logger.warning('>>>>>>>>>>>>>>>>>>>> ITEM %s' % item)
             items.append(item)
 
         return items
@@ -60,20 +59,21 @@ class ScienceCrawler(scrapy.Spider):
         for odd_table in odd_tables:
             rows = odd_table.css('tr')
             articles.extend(self.process_rows(rows))
-        self.logger.debug(articles)
         return articles
 
     def parse(self, response):
+        for article in self.parse_article_page(response):
+            yield article
+
         page_buttons = response.css('#tblOdds a')
+
         for page_button in page_buttons:
             link_text = self.get_raw(page_button.extract())
             if link_text.lower() == 'next':
                 next_link = page_button.xpath('@href').extract()
                 if len(next_link) >= 0:
-                    yield scrapy.Request(self.base_domain + next_link[0], callback=self.parse_article_page)
+                    yield scrapy.Request(self.base_domain + next_link[0], callback=self.parse)
 
-        for article in self.parse_article_page(response):
-            yield article
 
         # next_buttons = response.xpath('//*[@id="ContentLibrary"]//img[@src="http://s.hswstatic.com/en-us/skins/hsw/arrow-right-3x5-2.png"]')
         # for next_button in next_buttons:
