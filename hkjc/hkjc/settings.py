@@ -16,6 +16,7 @@ NEWSPIDER_MODULE = 'hkjc.spiders'
 
 RAW_FOLDER = '/home/vagrant/temp/raw'
 DECRYPTED_FOLDER = '/home/vagrant/temp/decrypted'
+META_FOLDER = '/home/vagrant/temp/meta'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'howstuffworks (+http://www.yourdomain.com)'

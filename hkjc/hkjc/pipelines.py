@@ -5,20 +5,55 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import os
+import pickle
 import logging
 from datetime import datetime
 
 
 class FileWriterPipeline(object):
-    def __init__(self, raw_folder, decrypted_folder):
+    def __init__(self, raw_folder, decrypted_folder, meta_folder):
         self.raw_folder = raw_folder
         self.decrypted_folder = decrypted_folder
+        self.meta_folder = meta_folder
+        self.match_names = {}
+
+    def close_spider(self, spider):
+        last_matches_file = os.path.join(self.meta_folder, 'matches.pkl')
+
+        if not os.path.isfile(last_matches_file):
+            os.makedirs(self.meta_folder)
+            with open(last_matches_file, 'w') as f:
+                pickle.dump(self.match_names, f)
+            return
+
+        with open(last_matches_file, 'r') as f:
+            temp = pickle.load(f)
+            for name in temp:
+                if name not in self.match_names:
+                    # Mark match with name as final
+                    file_path = temp[name]
+                    file_data = []
+                    with open(file_path, 'rw') as t:
+                        file_data = t.readlines()
+                        data = file_data[-1].strip()
+                        tokens = data.split(',')
+                        tokens[-1] = '1\n'
+
+                        file_data = file_data[:-1] + ','.join(tokens)
+
+                    with open(file_path, 'w') as t:
+                        for line in file_data:
+                            t.write(line)
+
+        with open(last_matches_file, 'w') as f:
+            pickle.dump(self.match_names, f)
 
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
             raw_folder=crawler.settings.get('RAW_FOLDER'),
             decrypted_folder=crawler.settings.get('DECRYPTED_FOLDER'),
+            meta_folder=crawler.settings.get('META_FOLDER')
         )
 
     def format_item(self, item, is_final):
@@ -111,7 +146,7 @@ class FileWriterPipeline(object):
         if item.get('home_team') is None or item.get('away_team') is None:
             return item
         match_name = "%s-%s" % (item.get('home_team').strip('"'),
-                                item.get('home_team').strip('"'))
+                                item.get('away_team').strip('"'))
 
 
         decrypted_filepath = 'Handicap_HAD/decrypted/%s/%s/%s/%s/Handicap_HAD' % (dtobj.year, dtobj.month, dtobj.day, match_name)
@@ -133,6 +168,9 @@ class FileWriterPipeline(object):
             save_item = True
 
         if save_item:
+
+            self.match_names[match_name] = file_path
+
             parent_dir = os.path.dirname(file_path)
             if not os.path.isdir(parent_dir):
                 os.makedirs(parent_dir)

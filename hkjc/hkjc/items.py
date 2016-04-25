@@ -29,3 +29,7 @@ class ArticleItem(scrapy.Item):
     away_odds = scrapy.Field()
 
     final = scrapy.Field()
+
+
+class RawPages(scrapy.Item):
+    pages = scrapy.Field()
