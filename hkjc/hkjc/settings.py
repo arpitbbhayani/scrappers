@@ -14,7 +14,8 @@ BOT_NAME = 'hkjc'
 SPIDER_MODULES = ['hkjc.spiders']
 NEWSPIDER_MODULE = 'hkjc.spiders'
 
-DUMP_FOLDER = '/home/vagrant/temp/'
+RAW_FOLDER = '/home/vagrant/temp/raw'
+DECRYPTED_FOLDER = '/home/vagrant/temp/decrypted'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'howstuffworks (+http://www.yourdomain.com)'
