@@ -148,7 +148,7 @@ class FileWriterPipeline(object):
 
     def process_item(self, item, spider):
         if not self.is_valid_item(item):
-            logging.error(item)
+            logging.warning("Skipping item: " + str(item))
             return item
 
         # Get file path for decrypeted data
