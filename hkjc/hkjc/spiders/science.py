@@ -33,7 +33,7 @@ class HKJCCrawler(scrapy.Spider):
     def process_team_name(self, name):
         return '"%s"' % name.replace(' ', '_')
 
-    def process_rows(self, rows, server_timestamp):
+    def process_rows(self, rows, server_timestamp, html):
         items = []
         for row in rows:
 
@@ -45,6 +45,9 @@ class HKJCCrawler(scrapy.Spider):
 
             class_attr = temp_rows[0].lower()
             if not ('rhead' in class_attr or 'rchead' in class_attr or 'tdpage' in class_attr):
+
+                # Save raw html
+                item['html'] = html
 
                 # Server timestamp
                 dt = server_timestamp.split(' ')
@@ -122,7 +125,7 @@ class HKJCCrawler(scrapy.Spider):
 
         for odd_table in odd_tables:
             rows = odd_table.css('tr')
-            articles.extend(self.process_rows(rows, server_timestamp))
+            articles.extend(self.process_rows(rows, server_timestamp, response.body))
         return articles
 
     def parse(self, response):

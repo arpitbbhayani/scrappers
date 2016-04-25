@@ -30,6 +30,8 @@ class ArticleItem(scrapy.Item):
 
     final = scrapy.Field()
 
+    html = scrapy.Field()
+
 
 class RawPages(scrapy.Item):
     pages = scrapy.Field()

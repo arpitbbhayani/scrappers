@@ -16,12 +16,28 @@ class FileWriterPipeline(object):
         self.decrypted_folder = decrypted_folder
         self.meta_folder = meta_folder
         self.match_names = {}
+        self.global_count = 0
+        self.global_count_str = 0
+
+        self.global_count_file = os.path.join(self.meta_folder, 'count.txt')
+        parent_dir = os.path.dirname(self.global_count_file)
+        if not os.path.isdir(parent_dir):
+            os.makedirs(parent_dir)
+
+        if not os.path.isfile(self.global_count_file):
+            with open(self.global_count_file, 'w') as f:
+                f.write('0004000000')
+
+        self.global_count_str = '0'
+        with open(self.global_count_file, 'r') as f:
+            self.global_count = int(f.read().strip())
+            self.global_count_str = str(self.global_count).zfill(10)
+            self.global_count += 1
 
     def close_spider(self, spider):
         last_matches_file = os.path.join(self.meta_folder, 'matches.pkl')
 
         if not os.path.isfile(last_matches_file):
-            os.makedirs(self.meta_folder)
             with open(last_matches_file, 'w') as f:
                 pickle.dump(self.match_names, f)
             return
@@ -168,7 +184,6 @@ class FileWriterPipeline(object):
             save_item = True
 
         if save_item:
-
             self.match_names[match_name] = file_path
 
             parent_dir = os.path.dirname(file_path)
@@ -180,5 +195,21 @@ class FileWriterPipeline(object):
                 item_str = self.format_item(item, False)
                 data_file.write(item_str)
                 data_file.write('\n')
+
+            # Saving raw file
+            dtobj = datetime.now()
+            raw_file = 'soccer/raw/%s/%s/%s/%s_%s-%s-%s_Handicap_Had' % (dtobj.year, dtobj.month, dtobj.day, self.global_count_str, dtobj.hour, dtobj.minute, dtobj.second)
+
+            raw_file_path = os.path.join(self.raw_folder, raw_file)
+
+            parent_dir = os.path.dirname(raw_file_path)
+            if not os.path.isdir(parent_dir):
+                os.makedirs(parent_dir)
+
+            with open(raw_file_path, 'w') as data_file:
+                data_file.write(item.get('html'))
+
+            with open(self.global_count_file, 'w') as f:
+                f.write(self.global_count_str)
 
         return item
