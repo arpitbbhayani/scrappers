@@ -39,7 +39,7 @@ class FileWriterPipeline(object):
                         tokens = data.split(',')
                         tokens[-1] = '1\n'
 
-                        file_data = file_data[:-1] + ','.join(tokens)
+                        file_data = file_data[:-1] + [','.join(tokens)]
 
                     with open(file_path, 'w') as t:
                         for line in file_data:
