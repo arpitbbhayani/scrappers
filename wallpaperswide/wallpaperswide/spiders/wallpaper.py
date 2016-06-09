@@ -7,7 +7,7 @@ class WallpaperCrawler(scrapy.Spider):
     allowed_domains = ["wallpaperswide.com"]
     base_url = 'http://wallpaperswide.com'
     start_urls = [
-        "http://wallpaperswide.com/love-desktop-wallpapers.html"
+        "http://wallpaperswide.com/games-desktop-wallpapers.html"
     ]
     priorities = [
         '1366x768',

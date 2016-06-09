@@ -3,3 +3,4 @@ venv
 *.pyo
 *.log
 .DS_Store
+*.json
